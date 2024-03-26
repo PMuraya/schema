@@ -390,28 +390,26 @@ abstract class schema extends mutall {
 
     //
     //Use the current working directory (cwd) to resolve relative path
-    static function resolve_path(string $iname1):string{
+    static function resolve_path(string $iname):string{
         //
-        //Conver the input to an absolute path
-        $iname2 = realpath($iname1);
+        //Test if the path given is absolute or relative
+        $is_absolute /*boolean */ = strpos($iname, DIRECTORY_SEPARATOR) === 0;
         //
-        //Test for absolute path
-        $is_absolute /*boolean */ = $iname2===true && $iname1===$iname2; 
+        //if the path is absolute return it as it is
+        if($is_absolute) return $iname;
         //
-        //If the input name is an absolute path, we return it as it is
-        if ($is_absolute) return $iname1;
+        //Otherwise resolve the relative path using the current workin directory
         //
-        //The input nam must be a relative path
-        //
-        //We need to conctruct the propert full path using the current
-        //working directory
         //
         //The cwd is available as a global variable via $_POST['cwd'] initialize
         //by index.php, if provided
         $cwd /*string|undefined*/ = $_POST['cwd'];
         //
-        
-
+        //If the curent working directory is not provided alert the user ????
+        if(!$cwd) throw new \Exception('Ensure the current workin directory is present or supply the absolute path insted!!');
+        //
+        //Compile and return the full path
+        return $cwd.DIRECTORY_SEPARATOR.$iname;
     }
     
     
