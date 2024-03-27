@@ -389,7 +389,8 @@ abstract class schema extends mutall {
     }
 
     //
-    //Use the current working directory (cwd) to resolve relative path
+    //Use the current working directories (system and user-defined) to resolve 
+    //relative path
     static function resolve_path(string $iname):string{
         //
         //Test if the path given is absolute or relative
@@ -401,29 +402,26 @@ abstract class schema extends mutall {
         //Otherwise resolve the relative path using the current working directory
         //and the script_name
         //
-        //Collect the cscript file name and the current working directory for
-        //the decison making that follows
+        //Collect the system and user defined current working directories (cwd_*)
         //
-        //The cwd is available as a global variable via $_POST['cwd'] initialize
-        //by index.php, if provided
+        //The user-defined cwd is available as a global variable via $_POST['cwd'];
+        //it is initialized by index.php, if provided
         $cwd_udf /*string|undefined*/ = $_POST["cwd"];
         //
-        //Get the system defined directory, i.e, the one from where this file 
-        //was launched form, and test if it si teh protected library version
+        //Get the system defined directory is the one from where this file 
+        //was launched from
         $cwd_sys = dirname($_SERVER['SCRIPT_NAME']);
         //
-        //If the system defined directory matches the protected one, 
+        //If the system defined directory matches the protected version, 
         // /schema/v/code, and there is no user defined current working
         //directory, then there is an issue; alert the user through an exception,
-        if (($cwd_sys==='/schema/v/code') && !(isset($cwd_udf))) throw new \Exception("Please supply a current word directory. Writing directly to /schemav/code is not allowed");
+        if (($cwd_sys==='/schema/v/code') && !(isset($cwd_udf))) 
+            throw new \Exception("Please supply a current word directory. Writing directly to /schemav/code is not allowed");
         //
         //If there is a user-defined current working directory, use it to resolve 
         //the relative path, i.e., help the system to use the cwd to do the resolving
         if($cwd_udf) return $cwd_udf.DIRECTORY_SEPARATOR.$iname;
         //
-        //The system defined current working directory is suitable for resolving 
-        //the relative path; let the system handle it, i.e., the relative path 
-        //does not require manual resolving. Return it as it is
         //The system defined current working directory is suitable for resolving 
         //the relative path; let the system handle it, i.e., the relative path 
         //does not require manual resolving. Return it as it is
@@ -1459,8 +1457,8 @@ class database extends schema {
     function get_sql_data(string $sql, string $source='str'): array{
         //
         //If the source of the sql is a file, read from it; otherwise it must be
-        //a strinh
-        if ($source==='file') $sql = \file_get_contents($_SERVER['DOCUMENT_ROOT'].$sql);
+        //a string
+        if ($source==='file') $sql = \file_get_contents($_SERVER['DOCUMENT_ROOT'].DIRECTORY_SEPARATOR.schema::resolve_path($sql));
         elseif ($source!=='str') throw new \Exception("Sql source '$source' is not known");     
         //
         //Execute the sql to get a pdo statement; catch PDO erors if any
