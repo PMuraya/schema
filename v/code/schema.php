@@ -408,22 +408,22 @@ abstract class schema extends mutall {
         //by index.php, if provided
         $cwd_udf /*string|undefined*/ = isset($_POST["cwd"]);
         //
-        //Get teh scripting name
-        //
-        //Get the directory from where this file was launched form
+        //Get the system defined directory, i.e, the one from where this file 
+        //was launched form, and test if it si teh protected library version
         $cwd_sys = dirname($_SERVER['SCRIPT_NAME'])==='/schema/v/code';
         //
-        //If the script name matches /schema/v/code and there is no current working
-        //directory, there is an issue; alert the user through an exception,
-        if ($cwd_sys && $cwd_udf) throw new \Exception("Plsae supply a current word direcotory. Writing directly to /schemav/code is not allowed");
+        //If the system defined directory matches the protected one, 
+        // /schema/v/code, and there is no user defined current working
+        //directory, then there is an issue; alert the user through an exception,
+        if ($cwd_sys && !$cwd_udf) throw new \Exception("Please supply a current word directory. Writing directly to /schemav/code is not allowed");
         //
-        //If there is a current working directory, use it to resolve the relative
-        //path, i.e., help teh system to use the cwd to do the resolving
+        //If there is a user-defined current working directory, use it to resolve 
+        //the relative path, i.e., help the system to use the cwd to do the resolving
         if($cwd_udf) return dirname($_SERVER['SCRIPT_NAME']).DIRECTORY_SEPARATOR.$iname;
         //
-        //The script is suitable for resolving the relatve path; let the system
-        //handle it, i.e., teh relatve pah does ot require manual resolving. Retuen it
-        // as it is
+        //The system defined current working directory is suitable for resolving 
+        //the relative path; let the system handle it, i.e., the relative path 
+        //does not require manual resolving. Return it as it is
         return $iname;
     }
     
