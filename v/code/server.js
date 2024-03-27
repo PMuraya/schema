@@ -17,10 +17,13 @@ Cargs,
 //
 Method_name, 
 //
-Margs) {
+Margs, 
+//
+//The current working directory. Important for resolving relative paths
+cwd) {
     //
     //Call the non parametric form of exec
-    return await exec_nonparam(Class_name, Method_name, Margs, Cargs);
+    return await exec_nonparam(Class_name, Method_name, Margs, Cargs, cwd);
 }
 //
 //Upload the given file to the server at the given folder. The return value is 
@@ -104,13 +107,22 @@ margs,
 //
 //If defined, this parameter represents the constructor arguements for the 
 //php class. It is undefined for static methods.
-cargs = null) {
+cargs = null, 
+//
+//The current working directory
+cwd) {
     //
     //Prepare to collect the data to send to the server
     const formdata = new FormData();
     //
-    //Add the application URL from the schema class
+    //Add the application URL from the schema class. (See the new approach
+    //below)
     formdata.append("url", schema.app_url);
+    //
+    //Add the current working directory, if available. This will replace the
+    //need for reading the app_url from a setup file
+    if (cwd)
+        formdata.append("cwd", cwd);
     //
     //Add to the form, the class to create objects on the server
     formdata.append('class', class_name);
