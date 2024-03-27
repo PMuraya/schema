@@ -424,6 +424,9 @@ abstract class schema extends mutall {
         //The system defined current working directory is suitable for resolving 
         //the relative path; let the system handle it, i.e., the relative path 
         //does not require manual resolving. Return it as it is
+        //The system defined current working directory is suitable for resolving 
+        //the relative path; let the system handle it, i.e., the relative path 
+        //does not require manual resolving. Return it as it is
         return $iname;
     }
     
