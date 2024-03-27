@@ -398,18 +398,33 @@ abstract class schema extends mutall {
         //if the path is absolute return it as it is
         if($is_absolute) return $iname;
         //
-        //Otherwise resolve the relative path using the current workin directory
+        //Otherwise resolve the relative path using the current working directory
+        //and the script_name
         //
+        //Collect the cscript file name and the current working directory for
+        //the decison making that follows
         //
         //The cwd is available as a global variable via $_POST['cwd'] initialize
         //by index.php, if provided
-        $cwd /*string|undefined*/ = $_POST['cwd'];
+        $cwd_udf /*string|undefined*/ = isset($_POST["cwd"]);
         //
-        //If the curent working directory is not provided alert the user ????
-        if(!$cwd) throw new \Exception('Ensure the current workin directory is present or supply the absolute path insted!!');
+        //Get teh scripting name
         //
-        //Compile and return the full path
-        return $cwd.DIRECTORY_SEPARATOR.$iname;
+        //Get the directory from where this file was launched form
+        $cwd_sys = dirname($_SERVER['SCRIPT_NAME'])==='/schema/v/code';
+        //
+        //If the script name matches /schema/v/code and there is no current working
+        //directory, there is an issue; alert the user through an exception,
+        if ($cwd_sys && $cwd_udf) throw new \Exception("Plsae supply a current word direcotory. Writing directly to /schemav/code is not allowed");
+        //
+        //If there is a current working directory, use it to resolve the relative
+        //path, i.e., help teh system to use the cwd to do the resolving
+        if($cwd_udf) return dirname($_SERVER['SCRIPT_NAME']).DIRECTORY_SEPARATOR.$iname;
+        //
+        //The script is suitable for resolving the relatve path; let the system
+        //handle it, i.e., teh relatve pah does ot require manual resolving. Retuen it
+        // as it is
+        return $iname;
     }
     
     
